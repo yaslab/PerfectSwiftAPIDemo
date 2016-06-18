@@ -111,10 +111,11 @@ func addBookRoutes() {
             response.setStatus(code: 400, message: "Bad Request")
             return
         }
-        if let _ = bookId.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) {
-            response.setStatus(code: 400, message: "Bad Request")
-            return
-        }
+        // note: `CharacterSet` dose not work in Linux.
+        //if let _ = bookId.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) {
+        //    response.setStatus(code: 400, message: "Bad Request")
+        //    return
+        //}
         
         var json = "{"
         
