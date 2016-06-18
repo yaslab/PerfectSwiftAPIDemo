@@ -13,21 +13,21 @@ class Paths {
         var url = documentURL
         //try! url.appendPathComponent("webroot", isDirectory: true)
         //return url.path!
-        return url + "webroot"
+        return url + "/webroot"
     }
     
     class var indexHtmlPath: String {
         var url = documentURL
         //try! url.appendPathComponent("webroot/index.html", isDirectory: false)
         //return url.path!
-        return url + "webroot/index.html"
+        return url + "/webroot/index.html"
     }
 
     class var databasePath: String {
         var url = documentURL
         //try! url.appendPathComponent("database.sqlite", isDirectory: false)
         //return url.path!
-        return url + "database.sqlite"
+        return url + "/database.sqlite"
     }
 
 }
