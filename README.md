@@ -22,22 +22,14 @@ Target: x86_64-apple-macosx10.9
 
 ```
 $ git clone https://github.com/yaslab/PerfectSwiftAPIDemo.git
-```
-
-Xcode プロジェクトを作成します。
-
-```
 $ cd PerfectSwiftAPIDemo/
-$ swift package generate-xcodeproj
-$ open PerfectSwiftAPIDemo.xcodeproj
 ```
 
-リソースファイルのパスを修正します。
-`path` に clone したディレクトリの Resources ディレクトリのフルパスを指定してください。
-
-Sources/Paths.swift
+リソースファイルのパスを修正します。`path` に clone したディレクトリの Resources ディレクトリのフルパスを指定してください。
 
 ```
+// Sources/Paths.swift
+
 class Paths {
 
     private class var documentURL: URL {
@@ -48,7 +40,7 @@ class Paths {
     ...
 ```
 
-書き換えたら実行します。
+書き換えたらビルドして実行します。
 
 ```
 $ swift build
@@ -83,6 +75,15 @@ $ curl -v http://localhost:8181/api/books/000005
 HTTP エラーになる場合は、リソースファイルのパスを確認してみましょう。
 
 `Command + C` でデモアプリを終了します。
+
+## Xcode プロジェクトを作成
+
+もし、必要であれば `*.xcodeproj` を作成することもできます。
+
+```
+$ swift package generate-xcodeproj
+$ open PerfectSwiftAPIDemo.xcodeproj
+```
 
 ## ライセンス
 
