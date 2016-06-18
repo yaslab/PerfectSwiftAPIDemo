@@ -3,9 +3,8 @@ import Foundation
 class Paths {
 
     private class var documentURL: URL {
-        var url = URL(fileURLWithPath: String(cString: getenv("HOME")), isDirectory: true)
-        try! url.appendPathComponent("Documents/PerfectSwiftAPIDemo", isDirectory: true)
-        return url
+        let path = String(cString: getenv("HOME")) + "/PerfectSwiftAPIDemo/Resources"
+        return URL(fileURLWithPath: path, isDirectory: true)
     }
 
     class var webRootPath: String {
