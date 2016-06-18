@@ -2,6 +2,8 @@ import Foundation
 import PerfectLib
 import SQLite
 
+private let jsonContentType = MimeType.forExtension("json") + "; charset=utf-8"
+
 private struct BookParams {
     
     let limit: Int
@@ -55,50 +57,42 @@ func addBookRoutes() {
             return
         }
         
-        var json = "{\"books\":["
-        
         do {
             let db = try SQLite(Paths.databasePath, readOnly: true)
             defer { db.close() }
             
-            var found = false
+            var jsonArray = [Any]()
+            
             let sql = "SELECT BookId, BookName, SubName "
                 + "FROM Book "
                 + "ORDER BY BookId "
                 + "LIMIT \(params.limit) "
                 + "OFFSET \(params.offset);"
             try db.forEachRow(statement: sql) { (stmt, rowNum) in
-                found = true
                 let bookId = stmt.columnText(position: 0)
                 let bookName = stmt.columnText(position: 1)
                 let subName = stmt.columnText(position: 2)
-                print("\(bookId): \(bookName) (\(subName))")
-                json += "{"
-                    + "\"bookId\":\"\(bookId)\","
-                    + "\"bookName\":\"\(bookName)\","
-                    + "\"subName\":\"\(subName)\""
-                    + "},"
+                
+                var obj = [String : Any]()
+                obj["bookId"] = bookId
+                obj["bookName"] = bookName
+                obj["subName"] = subName
+                
+                jsonArray.append(obj)
             }
             
-            guard found else {
+            if jsonArray.count == 0 {
                 response.setStatus(code: 404, message: "Not Found")
                 return
             }
             
-            if json.characters.last == "," {
-                json.characters.removeLast(1)
-            }
+            response.addHeader(name: "Content-Type", value: jsonContentType)
+            response.appendBody(string: try jsonArray.jsonEncodedString())
         }
         catch let error {
             print("\(error)")
             response.setStatus(code: 500, message: "Internal Server Error")
-            return
         }
-        
-        json += "]}"
-        
-        response.addHeader(name: "Content-Type", value: "application/json; charset=utf-8")
-        response.appendBody(string: json)
     }
     
     // MARK: GET: /api/books/001234
@@ -117,11 +111,11 @@ func addBookRoutes() {
         //    return
         //}
         
-        var json = "{"
-        
         do {
             let db = try SQLite(Paths.databasePath, readOnly: true)
             defer { db.close() }
+            
+            var jsonObject = [String : Any]()
 
             var count = 0
             var sql = "SELECT BookId, BookName, SubName, CreateDate, LastUpdate, BookCardUrl "
@@ -133,13 +127,14 @@ func addBookRoutes() {
                 let createDate = stmt.columnText(position: 3)
                 let lastUpdate = stmt.columnText(position: 4)
                 let bookCardUrl = stmt.columnText(position: 5)
-                print("\(bookId): \(bookName) (\(subName))")
-                json += "\"bookId\":\"\(bookId)\","
-                    + "\"bookName\":\"\(bookName)\","
-                    + "\"subName\":\"\(subName)\","
-                    + "\"createDate\":\"\(createDate)\","
-                    + "\"lastUpdate\":\"\(lastUpdate)\","
-                    + "\"bookCardUrl\":\"\(bookCardUrl)\""
+                
+                jsonObject["bookId"] = bookId
+                jsonObject["bookName"] = bookName
+                jsonObject["subName"] = subName
+                jsonObject["createDate"] = createDate
+                jsonObject["lastUpdate"] = lastUpdate
+                jsonObject["bookCardUrl"] = bookCardUrl
+
                 count = rowNum
             }
             
@@ -148,7 +143,7 @@ func addBookRoutes() {
                 return
             }
             
-            var personsJson = "\"persons\":["
+            var personArray = [Any]()
             
             sql = "SELECT P.PersonId, PR.RoleFlag, LastName, FirstName, DateOfBirth, DateOfDeath "
                 + "FROM Person P "
@@ -162,34 +157,27 @@ func addBookRoutes() {
                 let firstName = stmt.columnText(position: 3)
                 let dateOfBirth = stmt.columnText(position: 4)
                 let dateOfDeath = stmt.columnText(position: 5)
-                personsJson += "{"
-                    + "\"personId\":\"\(personId)\","
-                    + "\"roleFlag\":\"\(roleFlag)\","
-                    + "\"lastName\":\"\(lastName)\","
-                    + "\"firstName\":\"\(firstName)\","
-                    + "\"dateOfBirth\":\"\(dateOfBirth)\","
-                    + "\"dateOfDeath\":\"\(dateOfDeath)\""
-                    + "},"
+                
+                var personObject = [String : Any]()
+                personObject["personId"] = personId
+                personObject["roleFlag"] = roleFlag
+                personObject["lastName"] = lastName
+                personObject["firstName"] = firstName
+                personObject["dateOfBirth"] = dateOfBirth
+                personObject["dateOfDeath"] = dateOfDeath
+                
+                personArray.append(personObject)
             }
             
-            if personsJson.characters.last == "," {
-                personsJson.characters.removeLast(1)
-            }
+            jsonObject["persons"] = personArray
             
-            personsJson += "]"
-            
-            json += "," + personsJson
+            response.addHeader(name: "Content-Type", value: jsonContentType)
+            response.appendBody(string: try jsonObject.jsonEncodedString())
         }
         catch let error {
             print("\(error)")
             response.setStatus(code: 500, message: "Internal Server Error")
-            return
         }
-        
-        json += "}"
-
-        response.addHeader(name: "Content-Type", value: "application/json; charset=utf-8")
-        response.appendBody(string: json)
     }
     
 }

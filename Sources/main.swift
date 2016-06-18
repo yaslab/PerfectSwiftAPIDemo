@@ -16,7 +16,7 @@ Routing.Routes["/"] = { (request, response) in
     
     do {
         let html = try File(Paths.indexHtmlPath).readString()
-        response.addHeader(name: "Content-Type", value: "text/html")
+        response.addHeader(name: "Content-Type", value: MimeType.forExtension("html"))
         response.appendBody(string: html)
     }
     catch {
