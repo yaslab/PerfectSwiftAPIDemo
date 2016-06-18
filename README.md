@@ -5,6 +5,7 @@
 ## 動作確認環境
 
 - OSX 10.11.5
+- Xcode 8.0 beta (8S128d)
 - Swift 3.0 Preview 1 (June 13, 2016)
 
 ## 使い方
