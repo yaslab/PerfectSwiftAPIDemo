@@ -12,8 +12,8 @@
 
 ### Linux
 
-- Ubuntu 16.04
-- Swift 3.0.2
+- Ubuntu 16.04.1 (x64)
+- Swift 3.0.2 (Release)
 
 Ubuntu では以下のパッケージが必要でした。
 
