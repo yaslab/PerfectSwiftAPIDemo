@@ -13,6 +13,7 @@ server.serverPort = 8181
 // This will serve all static content by default
 let webRoot = Paths.webRootPath
 try Dir(webRoot).create()
+server.documentRoot = webRoot
 
 // Add our routes.
 var routes = makeURLRoutes()
