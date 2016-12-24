@@ -4,17 +4,17 @@
 
 ## 動作確認環境
 
-- OSX 10.11.5
-- Xcode 8.0 beta (8S128d)
-- Swift 3.0 Preview 1 (June 13, 2016)
+- macOS 10.12.2
+- Xcode 8.2.1
+- Swift 3.0.2
 
 ## 使い方
 
 Swift のバージョンを確認します。
 
 ```
-$ swift -version
-Apple Swift version 3.0 (swiftlang-800.0.30 clang-800.0.24)
+$ swift --version
+Apple Swift version 3.0.2 (swiftlang-800.0.63 clang-800.0.42.1)
 Target: x86_64-apple-macosx10.9
 ```
 
@@ -44,24 +44,34 @@ class Paths {
 
 ```
 $ swift build
+Compile COpenSSL xts128.c
+Compile COpenSSL xcbc_enc.c
+...
 Compile Swift Module 'PerfectThread' (2 sources)
+Compile Swift Module 'PerfectLib' (10 sources)
+Compile Swift Module 'SwiftMoment' (6 sources)
 Compile Swift Module 'SQLite' (1 sources)
+Linking COpenSSL
 Compile Swift Module 'PerfectNet' (5 sources)
-Compile Swift Module 'PerfectLib' (26 sources)
+Compile Swift Module 'PerfectLogger' (1 sources)
+Compile Swift Module 'StORM' (11 sources)
+Compile Swift Module 'SQLiteStORM' (9 sources)
+Compile Swift Module 'PerfectHTTP' (9 sources)
+Compile CHTTPParser http_parser.c
+Linking CHTTPParser
+Compile Swift Module 'PerfectHTTPServer' (7 sources)
 Compile Swift Module 'PerfectSwiftAPIDemo' (3 sources)
-Linking .build/debug/PerfectSwiftAPIDemo
+Linking ./.build/debug/PerfectSwiftAPIDemo
 
 $ .build/debug/PerfectSwiftAPIDemo
-Load libs from: ./PerfectLibraries/
-/+h
-/**+h
 
 GET:
+/+h
 /api
 	/books+h
 		/{id}+h
 
-Starting HTTP server on 0.0.0.0:8181 with document root /xxxx
+[INFO] Starting HTTP server  on 0.0.0.0:8181
 ```
 
 `curl` 等で API の動作確認をします。
