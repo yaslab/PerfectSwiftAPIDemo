@@ -15,7 +15,7 @@
 - Ubuntu 16.04
 - Swift 3.0.2
 
-以下のパッケージが必要でした。
+Ubuntu では以下のパッケージが必要でした。
 
 ```
 $ sudo apt-get install uuid sqlite3 libsqlite3-dev libssl-dev libcurl4-openssl-dev
