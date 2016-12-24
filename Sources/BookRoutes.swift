@@ -1,59 +1,52 @@
 import Foundation
-import PerfectLib
+import PerfectHTTP
 import SQLite
 
 private let jsonContentType = MimeType.forExtension("json") + "; charset=utf-8"
+
+extension HTTPRequest {
+
+    fileprivate func paramAsInt(name: String, defaultValue: Int) -> Int? {
+        guard let (_, value) = queryParams.filter({ $0.0 == name }).first else {
+            return defaultValue
+        }
+        guard let intValue = Int(value, radix: 10) else {
+            return nil
+        }
+        return intValue
+    }
+    
+}
 
 private struct BookParams {
     
     let limit: Int
     let offset: Int
     
-    init?(queryParams: [(String, String)]) {
-        var limit = 10
-        var offset = 0
-        
-        let limitStr = queryParams
-            .filter { $0.0 == "limit" }
-            .first?.1
-        let offsetStr = queryParams
-            .filter { $0.0 == "offset" }
-            .first?.1
-        
-        if limitStr != nil {
-            guard let i = Int(limitStr!) else {
-                return nil
-            }
-            guard i > 0 else {
-                return nil
-            }
-            limit = i
+    init?(request: HTTPRequest) {
+        guard let limit = request.paramAsInt(name: "limit", defaultValue: 10) else {
+            return nil
         }
-        if offsetStr != nil {
-            guard let i = Int(offsetStr!) else {
-                return nil
-            }
-            guard i >= 0 else {
-                return nil
-            }
-            offset = i
+        guard let offset = request.paramAsInt(name: "offset", defaultValue: 0) else {
+            return nil
         }
-        
         self.limit = limit
         self.offset = offset
     }
     
 }
 
-func addBookRoutes() {
-    
+func makeURLRoutes() -> Routes {
+    var routes = Routes()
+    var api = Routes()
+
     // MARK: GET: /api/books?limit=10&offset=0
     
-    Routing.Routes[.get, "/api/books"] = { (request, response) in
-        defer { response.requestCompleted() }
+    api.add(method: .get, uri: "/books") { (request, response) in
+        defer { response.completed() }
 
-        guard let params = BookParams(queryParams: request.queryParams) else {
-            response.setStatus(code: 400, message: "Bad Request")
+        guard let params = BookParams(request: request) else {
+            response.status = .badRequest
             return
         }
         
@@ -82,34 +75,33 @@ func addBookRoutes() {
             }
             
             if jsonArray.count == 0 {
-                response.setStatus(code: 404, message: "Not Found")
+                response.status = .notFound
                 return
             }
             
-            response.addHeader(name: "Content-Type", value: jsonContentType)
+            response.addHeader(.contentType, value: jsonContentType)
             response.appendBody(string: try jsonArray.jsonEncodedString())
         }
-        catch let error {
+        catch {
             print("\(error)")
-            response.setStatus(code: 500, message: "Internal Server Error")
+            response.status = .internalServerError
         }
     }
     
     // MARK: GET: /api/books/001234
     
-    Routing.Routes[.get, "/api/books/{id}"] = { (request, response) in
-        defer { response.requestCompleted() }
+    api.add(method: .get, uri: "/books/{id}") { (request, response) in
+        defer { response.completed() }
         
         let bookId = request.urlVariables["id"]!
         if bookId.characters.count != 6 {
-            response.setStatus(code: 400, message: "Bad Request")
+            response.status = .badRequest
             return
         }
-        // note: `CharacterSet` dose not work in Linux.
-        //if let _ = bookId.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) {
-        //    response.setStatus(code: 400, message: "Bad Request")
-        //    return
-        //}
+        if let _ = bookId.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) {
+            response.status = .badRequest
+            return
+        }
         
         do {
             let db = try SQLite(Paths.databasePath, readOnly: true)
@@ -139,7 +131,7 @@ func addBookRoutes() {
             }
             
             if count == 0 {
-                response.setStatus(code: 404, message: "Not Found")
+                response.status = .notFound
                 return
             }
             
@@ -171,13 +163,17 @@ func addBookRoutes() {
             
             jsonObject["persons"] = personArray
             
-            response.addHeader(name: "Content-Type", value: jsonContentType)
+            response.addHeader(.contentType, value: jsonContentType)
             response.appendBody(string: try jsonObject.jsonEncodedString())
         }
-        catch let error {
+        catch {
             print("\(error)")
-            response.setStatus(code: 500, message: "Internal Server Error")
+            response.status = .internalServerError
         }
     }
     
+    var apiRoutes = Routes(baseUri: "/api")
+    apiRoutes.add(api)
+    routes.add(apiRoutes)
+    return routes
 }

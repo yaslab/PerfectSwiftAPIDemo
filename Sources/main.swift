@@ -1,38 +1,43 @@
 import Foundation
 import PerfectLib
+import PerfectHTTP
+import PerfectHTTPServer
 
-// Initialize base-level services
-PerfectServer.initializeServices()
+// Create server object.
+let server = HTTPServer()
+
+// Listen on port 8181.
+server.serverPort = 8181
 
 // Create our webroot
 // This will serve all static content by default
 let webRoot = Paths.webRootPath
 try Dir(webRoot).create()
 
-// Add our routes and such
-// Register your own routes and handlers
-Routing.Routes["/"] = { (request, response) in
-    defer { response.requestCompleted() }
-    
+// Add our routes.
+var routes = makeURLRoutes()
+
+routes.add(method: .get, uri: "/") { (request, response) in
+    defer { response.completed() }
+
     do {
         let html = try File(Paths.indexHtmlPath).readString()
-        response.addHeader(name: "Content-Type", value: MimeType.forExtension("html"))
+        response.addHeader(.contentType, value: MimeType.forExtension("html"))
         response.appendBody(string: html)
     }
     catch {
-        let message = "Internal Server Error"
-        response.appendBody(string: message)
-        response.setStatus(code: 500, message: message)
+        response.status = .internalServerError
+        response.appendBody(string: response.status.description)
     }
 }
 
-addBookRoutes()
-
-print("\(Routing.Routes.description)")
+// Check the console to see the logical structure of what was installed.
+print("\(routes.navigator.description)")
+server.addRoutes(routes)
 
 do {
-    // Launch the HTTP server on port 8181
-    try HTTPServer(documentRoot: webRoot).start(port: 8181)
+    // Launch the HTTP server
+    try server.start()
 }
 catch PerfectError.networkError(let err, let msg) {
     print("Network error thrown: \(err) \(msg)")
