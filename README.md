@@ -4,9 +4,22 @@
 
 ## 動作確認環境
 
+### macOS
+
 - macOS 10.12.2
 - Xcode 8.2.1
 - Swift 3.0.2
+
+### Linux
+
+- Ubuntu 16.04
+- Swift 3.0.2
+
+以下のパッケージが必要でした。
+
+```
+$ sudo apt-get install uuid sqlite3 libsqlite3-dev libssl-dev libcurl4-openssl-dev
+```
 
 ## 使い方
 
@@ -88,7 +101,7 @@ $ curl -v http://localhost:8181/api/books/000005
 
 HTTP エラーになる場合は、リソースファイルのパスを確認してみましょう。
 
-`Command + C` でデモアプリを終了します。
+`Ctrl + C` でデモアプリを終了します。
 
 ## Xcode プロジェクトを作成
 
