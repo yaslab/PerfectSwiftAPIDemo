@@ -40,7 +40,7 @@ class Paths {
     ...
 ```
 
-書き換えたらビルドして実行します。
+書き換えたらビルドします。
 
 ```
 $ swift build
@@ -62,7 +62,11 @@ Linking CHTTPParser
 Compile Swift Module 'PerfectHTTPServer' (7 sources)
 Compile Swift Module 'PerfectSwiftAPIDemo' (3 sources)
 Linking ./.build/debug/PerfectSwiftAPIDemo
+```
 
+ビルドが成功したら実行します。
+
+```
 $ .build/debug/PerfectSwiftAPIDemo
 
 GET:
@@ -98,4 +102,4 @@ $ open PerfectSwiftAPIDemo.xcodeproj
 ## ライセンス
 
 - このプロジェクト (PerfectSwiftAPIDemo) は MIT ライセンスです。
-- このプロジェクトには CC BY 2.1 JP ライセンスで提供されている、青空文庫の書架情報が含まれています。
+- このプロジェクトには CC BY 2.1 JP ライセンスで提供されている、青空文庫の[書架情報](http://www.aozora.gr.jp/index_pages/person_all.html)が含まれています。
