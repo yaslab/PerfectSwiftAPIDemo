@@ -15,10 +15,26 @@
 - Ubuntu 16.04.1 (x64)
 - Swift 3.0.2 (Release)
 
+### Windows
+
+- Windows 10 Home 1607 (x64)
+- Bash on Ubuntu on Windows (Ubuntu 14.04.5)
+- Swift 3.0.2 (Release)
+
 Ubuntu では以下のパッケージが必要でした。
 
 ```
-$ sudo apt-get install uuid sqlite3 libsqlite3-dev libssl-dev libcurl4-openssl-dev
+$ sudo apt-get install uuid uuid-dev sqlite3 libsqlite3-dev libssl-dev libcurl4-openssl-dev
+```
+
+Windows ではさらに以下が必要でした。（execstack については[こちら](https://github.com/Microsoft/BashOnWindows/issues/286)を参照しました）
+
+```
+$ sudo apt-get install clang-3.6
+$ sudo update-alternatives --install /usr/bin/clang /usr/bin/clang-3.6 100
+$ sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.6 100
+$ sudo apt-get install execstack
+$ /usr/sbin/execstack -c /path/to/swift-3.0.2-RELEASE-ubuntu14.04/usr/lib/swift/linux/libFoundation.so
 ```
 
 ## 使い方
