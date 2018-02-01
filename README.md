@@ -6,35 +6,33 @@
 
 ### macOS
 
-- macOS 10.12.2
-- Xcode 8.2.1
-- Swift 3.0.2
+- macOS 10.13.2
+- Xcode 9.2
+- Swift 4.0.3
 
 ### Linux
 
 - Ubuntu 16.04.1 (x64)
-- Swift 3.0.2 (Release)
+- Swift 4.0.3 (Release)
 
 ### Windows
 
-- Windows 10 Home 1607 (x64)
-- Bash on Ubuntu on Windows (Ubuntu 14.04.5)
-- Swift 3.0.2 (Release)
+- Hyper-V
+- Docker
 
 Ubuntu では以下のパッケージが必要でした。
 
 ```
-$ sudo apt-get install uuid uuid-dev sqlite3 libsqlite3-dev libssl-dev libcurl4-openssl-dev
+$ git clone https://github.com/PerfectlySoft/Perfect-Ubuntu.git && \
+cd Perfect-Ubuntu/ && \
+chmod +x ./install.sh && \
+sudo ./install.sh --sure
 ```
 
-Windows ではさらに以下が必要でした。（execstack については[こちら](https://github.com/Microsoft/BashOnWindows/issues/286)を参照しました）
+Windows ではさらに以下が必要でした。
 
 ```
-$ sudo apt-get install clang-3.6
-$ sudo update-alternatives --install /usr/bin/clang /usr/bin/clang-3.6 100
-$ sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.6 100
-$ sudo apt-get install execstack
-$ /usr/sbin/execstack -c /path/to/swift-3.0.2-RELEASE-ubuntu14.04/usr/lib/swift/linux/libFoundation.so
+$ docker run -it -v $pwd:/home -w /home -p 8181:8181 rockywei/swift:4.0 /bin/bash -c "swift run"
 ```
 
 ## 使い方
@@ -43,7 +41,7 @@ Swift のバージョンを確認します。
 
 ```
 $ swift --version
-Apple Swift version 3.0.2 (swiftlang-800.0.63 clang-800.0.42.1)
+Apple Swift version 4.0.3 (swiftlang-900.0.74.1 clang-900.0.39.2)
 Target: x86_64-apple-macosx10.9
 ```
 
@@ -52,51 +50,13 @@ Target: x86_64-apple-macosx10.9
 ```
 $ git clone https://github.com/yaslab/PerfectSwiftAPIDemo.git
 $ cd PerfectSwiftAPIDemo/
-```
-
-リソースファイルのパスを修正します。`path` に clone したディレクトリの Resources ディレクトリのフルパスを指定してください。
-
-```
-// Sources/Paths.swift
-
-class Paths {
-
-    private class var documentURL: URL {
-        let path = "<clone したディレクトリ>/PerfectSwiftAPIDemo/Resources"
-        return URL(fileURLWithPath: path, isDirectory: true)
-    }
-
-    ...
-```
-
-書き換えたらビルドします。
-
-```
-$ swift build
-Compile COpenSSL xts128.c
-Compile COpenSSL xcbc_enc.c
-...
-Compile Swift Module 'PerfectThread' (2 sources)
-Compile Swift Module 'PerfectLib' (10 sources)
-Compile Swift Module 'SwiftMoment' (6 sources)
-Compile Swift Module 'SQLite' (1 sources)
-Linking COpenSSL
-Compile Swift Module 'PerfectNet' (5 sources)
-Compile Swift Module 'PerfectLogger' (1 sources)
-Compile Swift Module 'StORM' (11 sources)
-Compile Swift Module 'SQLiteStORM' (9 sources)
-Compile Swift Module 'PerfectHTTP' (9 sources)
-Compile CHTTPParser http_parser.c
-Linking CHTTPParser
-Compile Swift Module 'PerfectHTTPServer' (7 sources)
-Compile Swift Module 'PerfectSwiftAPIDemo' (3 sources)
-Linking ./.build/debug/PerfectSwiftAPIDemo
+$ swift run
 ```
 
 ビルドが成功したら実行します。
 
 ```
-$ .build/debug/PerfectSwiftAPIDemo
+Linking ./.build/x86_64-apple-macosx10.10/debug/PerfectSwiftAPIDemo
 
 GET:
 /+h
@@ -117,7 +77,7 @@ $ curl -v http://localhost:8181/api/books/000005
 
 HTTP エラーになる場合は、リソースファイルのパスを確認してみましょう。
 
-`Ctrl + C` でデモアプリを終了します。
+`Ctrl + C` / `docker ps ` && `docker kill ` でデモアプリを終了します。
 
 ## Xcode プロジェクトを作成
 
@@ -127,6 +87,8 @@ HTTP エラーになる場合は、リソースファイルのパスを確認し
 $ swift package generate-xcodeproj
 $ open PerfectSwiftAPIDemo.xcodeproj
 ```
+
+Xcode -> "Product > Scheme > Edit Scheme…" 设定 "Use Custom Working Directory" プロジェクトフォルダに追加します。
 
 ## ライセンス
 
