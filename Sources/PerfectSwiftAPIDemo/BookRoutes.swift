@@ -1,6 +1,6 @@
 import Foundation
 import PerfectHTTP
-import SQLite
+import PerfectSQLite
 
 private let jsonContentType = MimeType.forExtension("json") + "; charset=utf-8"
 
